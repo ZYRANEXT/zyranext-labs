@@ -13,6 +13,7 @@ function isPaidStatus(status?: string | null) {
 async function updateProfilePlan(args: {
   userId?: string | null;
   customerId?: string | null;
+  customerEmail?: string | null;
   subscriptionId?: string | null;
   plan: Plan;
   status?: string | null;
@@ -23,6 +24,10 @@ async function updateProfilePlan(args: {
 
   if (!userId && args.customerId) {
     const { data } = await sb.from('profiles').select('id').eq('stripe_customer_id', args.customerId).maybeSingle();
+    userId = data?.id || null;
+  }
+  if (!userId && args.customerEmail) {
+    const { data } = await sb.from('profiles').select('id').eq('email', args.customerEmail).maybeSingle();
     userId = data?.id || null;
   }
   if (!userId) return;
@@ -70,18 +75,31 @@ export async function POST(req: Request) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session;
         const userId = session.metadata?.user_id || session.client_reference_id;
-        const plan = (session.metadata?.plan || 'free') as Plan;
         const subscriptionId = typeof session.subscription === 'string' ? session.subscription : session.subscription?.id;
+        let plan = (session.metadata?.plan || 'free') as Plan;
         let status = 'active';
         let currentPeriodEnd: number | null = null;
+
         if (subscriptionId) {
-          const sub = await getStripe().subscriptions.retrieve(subscriptionId);
+          const sub = await getStripe().subscriptions.retrieve(subscriptionId, { expand: ['items.data.price'] });
           status = sub.status;
           currentPeriodEnd = (sub as any).current_period_end || Math.floor(Date.now() / 1000);
+          const priceId = sub.items.data[0]?.price?.id;
+          plan = (session.metadata?.plan as Plan) || planFromPriceId(priceId) || plan;
         }
+
+        if (plan === 'free') {
+          const lineItems = await getStripe().checkout.sessions.listLineItems(session.id, { limit: 1 });
+          const priceId = lineItems.data[0]?.price?.id;
+          plan = planFromPriceId(priceId) || plan;
+        }
+
+        const customerId = typeof session.customer === 'string' ? session.customer : session.customer?.id || null;
+        const customerEmail = session.customer_details?.email || session.customer_email || null;
         await updateProfilePlan({
           userId,
-          customerId: typeof session.customer === 'string' ? session.customer : session.customer?.id || null,
+          customerId,
+          customerEmail,
           subscriptionId,
           plan,
           status,

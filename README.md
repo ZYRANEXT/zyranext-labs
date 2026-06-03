@@ -98,3 +98,8 @@ Vercelにアップロードして、Environment Variablesに `.env.local` と同
 
 ドメイン変更時はStripe Webhook URLだけ変更してください。
 
+
+## v4.8 Update
+- Pricing buttons now use direct Stripe Payment Links, so clicking Pro / Creator / Team always opens Stripe.
+- Pricing labels are written as `/ month`.
+- Webhook includes fallback matching by Stripe customer email and purchased Price ID.
