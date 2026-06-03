@@ -1,55 +1,6 @@
 'use client';
-
 import Nav from '@/components/Nav';
 import { useState } from 'react';
 import { supabaseBrowser } from '@/lib/supabase';
 
-export default function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [msg, setMsg] = useState('');
-
-  async function handleLogin() {
-    setMsg('');
-    if (!email || !password) {
-      setMsg('Email and password are required.');
-      return;
-    }
-    setLoading(true);
-    const supabase = supabaseBrowser();
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    setLoading(false);
-    if (error) {
-      setMsg(error.message);
-      return;
-    }
-    location.href = '/dashboard';
-  }
-
-  return (
-    <>
-      <Nav />
-      <main className="section container">
-        <div className="card glass" style={{ maxWidth: 560, margin: 'auto' }}>
-          <span className="badge">PASSWORD LOGIN</span>
-          <h1><span className="grad">Login</span></h1>
-          <p className="lead">Login with your email and password. This does not use magic-link email.</p>
-
-          <label>Email</label>
-          <input placeholder="you@example.com" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-          <br /><br />
-
-          <label>Password</label>
-          <input placeholder="Your password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') handleLogin(); }} />
-          <br /><br />
-
-          <button className="btn primary" onClick={handleLogin} disabled={loading}>{loading ? 'Logging in...' : 'Login'}</button>
-          <a className="btn" style={{ marginLeft: 10 }} href="/signup">Create account</a>
-
-          {msg && <p className="lead danger" style={{ marginTop: 18 }}>{msg}</p>}
-        </div>
-      </main>
-    </>
-  );
-}
+export default function Login(){const[email,setEmail]=useState('');const[password,setPassword]=useState('');const[loading,setLoading]=useState(false);const[msg,setMsg]=useState('');async function login(){setMsg('');if(!email||!password){setMsg('Email and password are required.');return}setLoading(true);const{error}=await supabaseBrowser().auth.signInWithPassword({email,password});setLoading(false);if(error){setMsg(error.message);return}location.href='/dashboard'}async function oauth(provider:'discord'|'google'){await supabaseBrowser().auth.signInWithOAuth({provider,options:{redirectTo:`${location.origin}/dashboard`}})}return <><Nav/><main className="section container"><div className="card glass" style={{maxWidth:620,margin:'auto'}}><span className="badge">LOGIN</span><h1><span className="grad">Welcome back</span></h1><p className="lead">Login with email and password, or continue with Discord/Google after enabling OAuth in Supabase.</p><label>Email</label><input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="you@example.com"/><label>Password</label><input type="password" value={password} onChange={e=>setPassword(e.target.value)} onKeyDown={e=>{if(e.key==='Enter')login()}} placeholder="Your password"/><br/><br/><button className="btn primary" onClick={login} disabled={loading}>{loading?'Logging in...':'Login'}</button><a className="btn" style={{marginLeft:10}} href="/signup">Create account</a><div className="grid cols2" style={{marginTop:18}}><button className="btn" onClick={()=>oauth('discord')}>Continue with Discord</button><button className="btn" onClick={()=>oauth('google')}>Continue with Google</button></div>{msg&&<p className="lead danger">{msg}</p>}</div></main></>}
