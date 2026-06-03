@@ -43,7 +43,7 @@ NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
 
-OPENAI_API_KEY=
+GEMINI_API_KEY=
 
 STRIPE_SECRET_KEY=
 STRIPE_WEBHOOK_SECRET=
@@ -79,4 +79,4 @@ as an allowed redirect URL.
 
 
 ## AI Generator
-This v5.1 build uses Google Gemini. Add `GEMINI_API_KEY` in Render Environment Variables, then redeploy.
+This v5.2 build uses Google Gemini with the current `gemini-2.0-flash` model. Add `GEMINI_API_KEY` in Render Environment Variables, then redeploy.
