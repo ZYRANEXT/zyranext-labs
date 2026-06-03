@@ -104,21 +104,26 @@ export default function Dashboard() {
     setLoading(true);
     setOutput('');
     const prompt = `Creator Profile: ${JSON.stringify(profile)}\n\nRequest: ${input}`;
-    const r = await fetch('/api/ai/generate', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json', ...authHeader(session.access_token) },
-      body: JSON.stringify({ tool, input: prompt }),
-    });
-    const j = await r.json();
-    setLoading(false);
-    if (!r.ok) {
-      setOutput(j.error || 'Error');
-      if (j.upgrade) setModal(true);
-      return;
+    try {
+      const r = await fetch('/api/ai/generate', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', ...authHeader(session.access_token) },
+        body: JSON.stringify({ tool, input: prompt }),
+      });
+      const j = await r.json().catch(() => ({}));
+      setLoading(false);
+      if (!r.ok) {
+        setOutput(j.error || 'AI request failed. Check Render logs.');
+        if (j.upgrade) setModal(true);
+        return;
+      }
+      setOutput(j.output || 'No output returned.');
+      setUsage(j.usage || usage + 1);
+      load();
+    } catch (error: any) {
+      setLoading(false);
+      setOutput(error?.message || 'Network error. Please try again.');
     }
-    setOutput(j.output);
-    setUsage(j.usage || usage + 1);
-    load();
   }
 
   async function analyzeClip() {
@@ -131,19 +136,24 @@ export default function Dashboard() {
     setClipOutput('');
     const form = new FormData();
     form.append('memo', `${clipMemo}\n\nCreator Profile: ${JSON.stringify(profile)}`);
-    const r = await fetch('/api/clip/analyze', {
-      method: 'POST',
-      headers: authHeader(session.access_token),
-      body: form,
-    });
-    const j = await r.json();
-    setLoading(false);
-    if (!r.ok) {
-      setClipOutput(j.error || 'Clip analysis failed.');
-      if (j.upgrade) setModal(true);
-      return;
+    try {
+      const r = await fetch('/api/clip/analyze', {
+        method: 'POST',
+        headers: authHeader(session.access_token),
+        body: form,
+      });
+      const j = await r.json().catch(() => ({}));
+      setLoading(false);
+      if (!r.ok) {
+        setClipOutput(j.error || 'Clip analysis failed.');
+        if (j.upgrade) setModal(true);
+        return;
+      }
+      setClipOutput(j.clips || 'No clips returned.');
+    } catch (error: any) {
+      setLoading(false);
+      setClipOutput(error?.message || 'Network error. Please try again.');
     }
-    setClipOutput(j.clips || 'No clips returned.');
   }
 
   async function createOverlay() {

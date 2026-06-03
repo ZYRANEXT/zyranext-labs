@@ -76,3 +76,7 @@ https://zyranext-labs.onrender.com/**
 ```
 
 as an allowed redirect URL.
+
+
+## AI Generator
+This v5.1 build uses Google Gemini. Add `GEMINI_API_KEY` in Render Environment Variables, then redeploy.
