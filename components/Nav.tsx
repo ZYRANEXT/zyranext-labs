@@ -1,0 +1,1 @@
+export default function Nav(){return <nav className="nav glass container"><a className="brand" href="/"><span className="mark"/><span>ZYRANEXT Labs</span></a><div style={{display:'flex',gap:10,flexWrap:'wrap'}}><a className="btn" href="/pricing">Pricing</a><a className="btn" href="/signup">Sign up</a><a className="btn primary" href="/login">Login</a></div></nav>}

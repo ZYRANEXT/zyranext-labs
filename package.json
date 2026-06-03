@@ -1,0 +1,31 @@
+{
+  "name": "zyranext-labs-production-v4-auto-upgrade",
+  "version": "2.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@supabase/auth-helpers-nextjs": "latest",
+    "@supabase/supabase-js": "latest",
+    "@stripe/stripe-js": "latest",
+    "chart.js": "latest",
+    "lucide-react": "latest",
+    "next": "14.2.18",
+    "openai": "latest",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "stripe": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "typescript": "latest",
+    "eslint": "latest",
+    "eslint-config-next": "latest"
+  }
+}
